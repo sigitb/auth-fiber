@@ -16,6 +16,8 @@ type service struct {
 type Service interface {
 	RegisterUser(input InputRegister) (models.User, error)
 	Login(input InputLogin) (string, error)
+	Verification(input InputVerification) error
+	FindEmail(email string) (models.User, error)
 }
 
 func NewService(repository Repository) *service {
@@ -67,6 +69,10 @@ func (s *service) Login(input InputLogin) (string, error) {
 		return "" , errors.New("Password is wrong")
 	}
 
+	if checkEmail.Status != 1{
+		return "" , errors.New("Your account has not been verified")
+	}
+
 	claims := jwt.MapClaims{}
 	claims["name"] = checkEmail.Name
 	claims["email"] = checkEmail.Email
@@ -81,3 +87,37 @@ func (s *service) Login(input InputLogin) (string, error) {
 
 	return token, nil 
 }
+
+func (s *service) Verification(input InputVerification) error {
+	user, err := s.repository.FindByEmail(input.Email)
+	if err != nil {
+		return err
+	}
+
+	if user.Status != 0 {
+		return errors.New("Your account has been verified")
+	}
+
+	errVerif := s.repository.UpdateStatus(user.Email)
+	if errVerif != nil {
+		return err
+	}
+
+	return  nil
+}
+
+func (s *service) FindEmail(email string) (models.User, error) {
+	user := models.User{}
+	
+	checkEmail, err := s.repository.FindByEmail(email)
+	if err != nil{
+		return user, err
+	}
+	
+	if checkEmail.ID == 0{
+		return user, errors.New("User not found")
+	}
+
+	return checkEmail, nil
+}
+

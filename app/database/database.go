@@ -54,6 +54,7 @@ func autoMigration(db *gorm.DB) error {
 	err := db.AutoMigrate(
 		&models.Role{}, 
 		&models.User{},
+		&models.Verification{},
 	)
 	if err != nil {
 		return err

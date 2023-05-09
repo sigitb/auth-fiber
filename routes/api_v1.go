@@ -2,15 +2,19 @@ package routes
 
 import (
 	"base-fiber/app/handlers"
-	"base-fiber/app/middleware"
 	"base-fiber/src/role"
 	"base-fiber/src/user"
+	"base-fiber/src/verification"
 
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
 
 func InitApiV1Routers(r *fiber.App, db *gorm.DB) {
+	// verification 
+	verificationRepository := verification.NewRepository(db)
+	verificationService := verification.NewService(verificationRepository)
+
 	// role
 	roleRepository := role.NewRepository(db)
 	roleService := role.NewService(roleRepository)
@@ -18,11 +22,13 @@ func InitApiV1Routers(r *fiber.App, db *gorm.DB) {
 	// user
 	userRepository := user.NewRepository(db)
 	userService := user.NewService(userRepository)
-	userController := handlers.NewAuthHandler(userService, roleService)
+	userController := handlers.NewAuthHandler(userService, roleService,verificationService)
 
 	v1 := r.Group("api/v1")
 
-	auth := v1.Group("/auth").Use(middleware.Authenticate)
+	auth := v1.Group("/auth")
 	auth.Post("/register", userController.RegisterUser)
 	auth.Post("/login", userController.Login)
+	auth.Post("/send-otp", userController.SendOtp)
+	auth.Post("/verification", userController.Verification)
 }

@@ -13,6 +13,7 @@ type repository struct {
 type Repository interface {
 	Save(user models.User) (models.User, error)
 	FindByEmail(email string) (models.User, error)
+	UpdateStatus(email string) error
 }
 
 func NewRepository(db *gorm.DB) *repository {
@@ -36,4 +37,11 @@ func (r *repository) FindByEmail(email string) (models.User, error) {
 		return user, err
 	}
 	return user, nil
+}
+func (r *repository) UpdateStatus(email string) error {
+	err := r.db.Model(&models.User{}).Where("email = ?", email).Update("status", 1).Error
+	if err != nil{
+		return err
+	}
+	return nil
 }
