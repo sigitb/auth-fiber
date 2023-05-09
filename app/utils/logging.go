@@ -13,7 +13,7 @@ type LogStructur struct {
 	Folder  string
 }
 
-func Log(msg string, types string, folder string) {
+func Log(msg interface{}, types string, folder string) {
 	logger := logrus.New()
 	folders := folder
 	os.MkdirAll("./logs/"+folders, 0755)
