@@ -1,0 +1,18 @@
+{
+    "boolean": "The :attribute field must be true or false.",
+    "confirmed": "The :attribute confirmation does not match.",
+    "date_format": "The :attribute does not match the format :format.",
+    "email": "The :attribute must be a valid email address.",
+    "required": "The :attribute field is required.",
+    "uuid": "The :attribute must be a valid UUID.",
+    "after": "The :attribute must be a date after :date.",
+    "in": "The selected :attribute is invalid.",
+    "same": "The :attribute and :other must match.",
+    "numeric": "The :attribute must be a number.",
+    "string": "The :attribute must be a string.",
+    "url": "The :attribute must be a valid URL.",
+    "file": "The :attribute must be a file.",
+    "alpha": "The :attribute must only contain letters.",
+    "alpha_dash": "The :attribute must only contain letters, numbers, dashes and underscores.",
+    "alpha_num": "The :attribute must only contain letters and numbers."
+}
