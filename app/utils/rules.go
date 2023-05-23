@@ -1,6 +1,8 @@
-package rules
+package utils
 
-import "regexp"
+import (
+	"regexp"
+)
 
 func Password(password string) bool {
 	tests := []string{".{7,}", "[a-z]", "[A-Z]", "[0-9]", "[^\\d\\w]"}
@@ -23,10 +25,10 @@ func Nik(nik string) bool {
 }
 
 func RuleIn(slice []string, str string) bool {
-    for _, s := range slice {
-        if s == str {
-            return true
-        }
-    }
-    return false
+	for _, s := range slice {
+		if s == str {
+			return true
+		}
+	}
+	return false
 }

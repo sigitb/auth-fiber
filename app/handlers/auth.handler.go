@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"base-fiber/app/utils"
-	"base-fiber/app/utils/rules"
 	"base-fiber/src/role"
 	"base-fiber/src/user"
 	"base-fiber/src/verification"
@@ -29,13 +28,13 @@ func (h *authHandler) RegisterUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
 	
-	errValidate := user.ValidateRegister(*bodyUser)
+	errValidate := utils.ValidateRequest(*bodyUser)
 	if errValidate != nil {
 		response := utils.ApiRespone("Register failed", http.StatusBadRequest, "error", errValidate)
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
 
-	if !rules.Password(bodyUser.Password) {
+	if !utils.Password(bodyUser.Password) {
 		response := utils.ApiRespone("The password must contain a combination of numbers, uppercase letters and symbols .", http.StatusBadRequest, "error", nil)
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
@@ -82,7 +81,7 @@ func (h *authHandler) Login(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
 	
-	errValidate := user.ValidateLogin(*bodyUser)
+	errValidate := utils.ValidateRequest(*bodyUser)
 	if errValidate != nil {
 		response := utils.ApiRespone("Login failed", http.StatusBadRequest, "error", errValidate)
 		return c.Status(fiber.StatusBadRequest).JSON(response)
@@ -110,7 +109,7 @@ func (h *authHandler) Verification(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
 
-	errValidate := user.ValidateVerification(*bodyUser)
+	errValidate := utils.ValidateRequest(*bodyUser)
 	if errValidate != nil {
 		response := utils.ApiRespone("Verification failed", http.StatusBadRequest, "error", errValidate)
 		return c.Status(fiber.StatusBadRequest).JSON(response)
@@ -168,7 +167,7 @@ func (h *authHandler) SendOtp(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
 	
-	errValidate := user.ValidateEmail(*bodyUser)
+	errValidate := utils.ValidateRequest(*bodyUser)
 	if errValidate != nil {
 		response := utils.ApiRespone("Login failed", http.StatusBadRequest, "error", errValidate)
 		return c.Status(fiber.StatusBadRequest).JSON(response)
