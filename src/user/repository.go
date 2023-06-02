@@ -14,6 +14,7 @@ type Repository interface {
 	Save(user models.User) (models.User, error)
 	FindByEmail(email string) (models.User, error)
 	UpdateStatus(email string) error
+	UpdatePassword(password string) error
 }
 
 func NewRepository(db *gorm.DB) *repository {
@@ -39,7 +40,15 @@ func (r *repository) FindByEmail(email string) (models.User, error) {
 	return user, nil
 }
 func (r *repository) UpdateStatus(email string) error {
-	err := r.db.Model(&models.User{}).Where("email = ?", email).Update("status", 1).Error
+	err := r.db.Model(&models.User{}).Where("email = ?", email).Where("deleted_at IS NULL").Update("status", 1).Error
+	if err != nil{
+		return err
+	}
+	return nil
+}
+
+func (r *repository) UpdatePassword(password string) error {
+	err := r.db.Model(&models.User{}).Where("password = ?", password).Where("deleted_at IS NULL").Update("status", 1).Error
 	if err != nil{
 		return err
 	}

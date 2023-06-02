@@ -10,29 +10,45 @@ import (
 
 
 type ErrorResponse struct {
-	FailedField string
-	Tag         string
-	Value       string
+	FailedField string `json:"failed_field"`
+	Tag         string `json:"tag"`
+	Value       string `json:"value"`
 }
 
 var validate = validator.New()
 
-func ValidateRequest(FindEmail interface{}) []*ErrorResponse {
+func ValidateRequest(request interface{}) []*ErrorResponse {
 	var errors []*ErrorResponse
 	validate.RegisterValidation("in", func(fl validator.FieldLevel) bool {
 		allowedValues := strings.Split(fl.Param(), "+")
 		return RuleIn(allowedValues, fl.Field().String())
 	})
-	err := validate.Struct(FindEmail)
+	validate.RegisterValidation("size", func(fl validator.FieldLevel) bool {
+		return Size(fl.Param(), fl.Field().String())
+	})
+	validate.RegisterValidation("date_format", func(fl validator.FieldLevel) bool {
+		return Size(fl.Param(), fl.Field().String())
+	})
+	validate.RegisterValidation("password-custom", func(fl validator.FieldLevel) bool {
+		return Password(fl.Field().String())
+	})
+	validate.RegisterValidation("nik", func(fl validator.FieldLevel) bool {
+		return Nik(fl.Field().String())
+	})
+	validate.RegisterValidation("alpha", func(fl validator.FieldLevel) bool {
+		return Alpha(fl.Field().String())
+	})
+	validate.RegisterValidation("alpha_num", func(fl validator.FieldLevel) bool {
+		return AlphaNum(fl.Field().String())
+	})
+	validate.RegisterValidation("alpha_dash", func(fl validator.FieldLevel) bool {
+		return AlphaDash(fl.Field().String())
+	})
+	err := validate.Struct(request)
 	if err != nil {
 		for _, err := range err.(validator.ValidationErrors) {
-
 			textErr := getValueValidation(err.Tag())
-			textAttribute := strings.ReplaceAll(textErr, ":attribute", "Parameter")
-			textOther := strings.ReplaceAll(textAttribute, ":other", err.Field())
-			textFormat := strings.ReplaceAll(textOther, ":format", err.Field())
-			textDate := strings.ReplaceAll(textFormat, ":date", err.Field())
-			value := textDate
+			value := getReplaceValueValidation(textErr, err.StructField(), err.Param())
 			var element ErrorResponse
 			element.FailedField = err.StructNamespace()
 			element.Tag = err.Tag()
@@ -43,22 +59,32 @@ func ValidateRequest(FindEmail interface{}) []*ErrorResponse {
 	return errors
 }
 
+func getReplaceValueValidation(value string, attr string , field string) string {
+	textAttribute := strings.ReplaceAll(value, ":attribute", attr)
+	textOther := strings.ReplaceAll(textAttribute, ":other", field)
+	textFormat := strings.ReplaceAll(textOther, ":format", field)
+	textDate := strings.ReplaceAll(textFormat, ":date", field)
+	textSize := strings.ReplaceAll(textDate, ":size", field)
+	return textSize
+}
+
 
 func getValueValidation(name string, lang ...string) string {
 	// Baca file JSON
 	language := ""
-	if len(lang) > 0  {
+	if len(lang) == 0  {
 		language = "en";
 	}
 	
 	var nameFile = ""
 	if language == "en" {
 		nameFile = "./app/utils/validation/en.json"
-	}else if language == "in"{
+	}else if language == "id"{
 		nameFile = "./app/utils/validation/id.json"
-		
 	}
-		data, err := ioutil.ReadFile(nameFile)
+
+
+	data, err := ioutil.ReadFile(nameFile)
 	if err != nil {
 		Log("Failed write file:"+err.Error(), "err", "validation")
 		return ""

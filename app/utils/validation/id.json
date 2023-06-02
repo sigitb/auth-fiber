@@ -1,0 +1,23 @@
+{
+    "boolean"    : ":attribute harus bernilai true atau false",
+    "confirmed"  : "Konfirmasi :attribute tidak cocok.",
+    "email"          : ":attribute harus berupa alamat surel yang valid.",
+    "in"       : ":attribute yang dipilih tidak valid.",
+    "max" : ":attribute maskimal bernilai :max.",
+    "min" : ":attribute minimal bernilai :max.",
+    "numeric" : ":attribute harus berupa angka.",
+    "same"   : ":attribute dan :other harus sama.",
+    "size" : ":attribute harus berukuran :size.",
+    "gtfield": ":attribute harus setelah :other.",
+    "ltfield": ":attribute harus sebelum :other.",
+    "string" : ":attribute harus berupa string.",
+    "uuid" : ":attribute harus merupakan UUID yang valid.",
+    "required" : ":attribute wajib diisi.",
+    "url"  : "Format :attribute tidak valid.",
+    "file" : ":attribute harus berupa sebuah berkas.",
+    "date_format"    : ":attribute tidak cocok dengan format :format.",
+    "password-custom": "Kata sandi harus berisi kombinasi angka, huruf besar, dan simbol.",
+    "alpha" : ":attribute hanya boleh berisi huruf.",
+    "alpha_dash" : ":attribute hanya boleh berisi huruf, angka, strip, dan garis bawah.",
+    "alpha_num"  : ":attribute hanya boleh berisi huruf dan angka."
+}

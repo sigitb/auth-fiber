@@ -31,4 +31,5 @@ func InitApiV1Routers(r *fiber.App, db *gorm.DB) {
 	auth.Post("/login", userController.Login)
 	auth.Post("/send-otp", userController.SendOtp)
 	auth.Post("/verification", userController.Verification)
+	auth.Post("/update-password", userController.UpdatePassword)
 }

@@ -14,7 +14,7 @@ func ForgotPassword(token string, email string, name string) {
 	m.SetHeader("From", os.Getenv("EMAIL_FROM_ADDRESS"))
 	m.SetHeader("To", email)
 	m.SetHeader("Subject", "Forgot password!")
-	m.SetBody("text/html", templates.TemplateResetPassword(os.Getenv("BASE_URL")+"?token="+url.QueryEscape(token), name))
+	m.SetBody("text/html", templates.TemplateResetPassword(os.Getenv("BASE_URL")+"?token="+url.QueryEscape(token)+"&email="+url.QueryEscape(email), name))
 
 	d := gomail.NewDialer(
 		os.Getenv("EMAIL_HOST"),

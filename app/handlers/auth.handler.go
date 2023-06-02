@@ -34,11 +34,6 @@ func (h *authHandler) RegisterUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
 
-	if !utils.Password(bodyUser.Password) {
-		response := utils.ApiRespone("The password must contain a combination of numbers, uppercase letters and symbols .", http.StatusBadRequest, "error", nil)
-		return c.Status(fiber.StatusBadRequest).JSON(response)
-	}
-
 	_, errRole := h.roleService.FindById(int(bodyUser.RoleId))
 	if errRole != nil {
 		response := utils.ApiRespone(errRole.Error(), http.StatusUnprocessableEntity, "error", nil)
@@ -215,6 +210,59 @@ func (h *authHandler) SendOtp(c *fiber.Ctx) error {
 		utils.Verification(newUser.Name, newUser.Email, code, "sigitbudianto423@gmail.com")
 	}
 	response := utils.ApiRespone("Send Otp/forgot password Successfully", http.StatusOK, "success", nil)
+
+	return c.Status(fiber.StatusOK).JSON(response)
+}
+
+func (h *authHandler) UpdatePassword(c *fiber.Ctx) error {
+	bodyUser := new(verification.InputVerifyForgoutPassword)
+	if err := c.BodyParser(bodyUser); err != nil{ 
+		response := utils.ApiRespone("Invalid format Request", http.StatusUnprocessableEntity, "error", nil)
+		return c.Status(fiber.StatusBadRequest).JSON(response)
+	}
+	
+	errValidate := utils.ValidateRequest(*bodyUser)
+	if errValidate != nil {
+		response := utils.ApiRespone("Register failed", http.StatusBadRequest, "error", errValidate)
+		return c.Status(fiber.StatusBadRequest).JSON(response)
+	}
+
+	newUser, errFindEmail := h.userService.FindEmail(bodyUser.Email)
+	if errFindEmail != nil {
+		utils.Log(errFindEmail.Error(), "err", "service")
+		response := utils.ApiRespone("credential is wrong", http.StatusBadRequest, "error", nil)
+		return c.Status(fiber.StatusBadRequest).JSON(response)
+	}
+
+	verif,errFindVerification:= h.verificationService.Find(bodyUser.Token, "forgot-password", int(newUser.ID))
+	if errFindVerification != nil {
+		utils.Log(errFindVerification.Error(), "err", "service")
+		response := utils.ApiRespone(errFindVerification.Error(), http.StatusUnprocessableEntity, "error", nil)
+		return c.Status(fiber.StatusBadRequest).JSON(response)
+	}
+	if verif.Expired.Unix() <= time.Now().Unix(){
+		errUpdateStatus := h.verificationService.UpdateStatus(int(verif.ID))
+		if errUpdateStatus != nil {
+			utils.Log(errUpdateStatus.Error(), "err", "service")
+		}
+		response := utils.ApiRespone("Expired Code", http.StatusUnprocessableEntity, "error", nil)
+		return c.Status(fiber.StatusBadRequest).JSON(response)
+	}
+
+	errUpdateVerification := h.verificationService.UpdateStatus(int(verif.ID))
+	if errUpdateVerification != nil {
+		utils.Log(errUpdateVerification.Error(), "err", "service")
+		response := utils.ApiRespone(errUpdateVerification.Error(), http.StatusUnprocessableEntity, "error", nil)
+		return c.Status(fiber.StatusBadRequest).JSON(response)
+	}
+
+	errUpdate := h.userService.UpdatePassword(bodyUser.Password,bodyUser.ConfirmPassword, newUser.Email)
+	if errUpdate != nil {
+		utils.Log(errUpdate.Error(), "err", "service")
+		response := utils.ApiRespone(errUpdate.Error(), http.StatusUnprocessableEntity, "error", nil)
+		return c.Status(fiber.StatusBadRequest).JSON(response)
+	}
+	response := utils.ApiRespone("Update password Successfully", http.StatusOK, "success", nil)
 
 	return c.Status(fiber.StatusOK).JSON(response)
 }

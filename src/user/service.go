@@ -18,6 +18,7 @@ type Service interface {
 	Login(input InputLogin) (string, error)
 	Verification(input InputVerification) error
 	FindEmail(email string) (models.User, error)
+	UpdatePassword(password string, confirmPassword string, email string) error
 }
 
 func NewService(repository Repository) *service {
@@ -119,5 +120,32 @@ func (s *service) FindEmail(email string) (models.User, error) {
 	}
 
 	return checkEmail, nil
+}
+
+func (s *service) UpdatePassword(password string, confirmPassword string, email string) error {
+	if password != confirmPassword {
+		return errors.New("Password not same")
+	}
+
+	checkEmail, err := s.repository.FindByEmail(email)
+	if err != nil{
+		return err
+	}
+	
+	if checkEmail.ID == 0{
+		return errors.New("User not found")
+	}
+
+	passwordHash, err := utils.HashingPassword(password)
+	if err != nil{
+		return err
+	}
+
+	errUpdate := s.repository.UpdatePassword(passwordHash)
+	if errUpdate != nil{
+		return errUpdate
+	}
+
+	return nil
 }
 

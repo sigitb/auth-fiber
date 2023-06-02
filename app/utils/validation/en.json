@@ -4,8 +4,12 @@
     "date_format": "The :attribute does not match the format :format.",
     "email": "The :attribute must be a valid email address.",
     "required": "The :attribute field is required.",
+    "max" : "The :attribute must not be greater than :max.",
+    "min" : "The :attribute must be at least :min.",
+    "size" : "The :attribute must be :size.",
     "uuid": "The :attribute must be a valid UUID.",
-    "after": "The :attribute must be a date after :date.",
+    "gtfield": "The :attribute must be after :other.",
+    "ltfield": "The :attribute must be before :other.",
     "in": "The selected :attribute is invalid.",
     "same": "The :attribute and :other must match.",
     "numeric": "The :attribute must be a number.",
@@ -13,6 +17,7 @@
     "url": "The :attribute must be a valid URL.",
     "file": "The :attribute must be a file.",
     "alpha": "The :attribute must only contain letters.",
+    "password-custom" : "The password must contain a combination of numbers, uppercase letters and symbols.",
     "alpha_dash": "The :attribute must only contain letters, numbers, dashes and underscores.",
     "alpha_num": "The :attribute must only contain letters and numbers."
 }
